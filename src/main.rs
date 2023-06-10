@@ -44,7 +44,7 @@ async fn main() -> Result<(), Report> {
     let isbn_db_key = match std::env::var("ISBNDB_KEY") {
         Ok(val) => val,
         Err(_) => {
-            return Err(eyre!("Could not obtain a key for the IsbnDb database")
+            return Err(eyre!("Could not obtain a key for the ISBNdb database")
                 .suggestion("Please set the ISBNDB_KEY variable to your key"));
         }
     };
