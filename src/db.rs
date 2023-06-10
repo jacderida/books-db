@@ -193,3 +193,88 @@ pub fn save_book(database_path: PathBuf, book: &Book) -> Result<u32> {
     }
     Ok(id)
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use assert_fs::prelude::*;
+    use rusqlite::Connection;
+
+    #[test]
+    fn init_db_should_create_the_database() {
+        let storage_dir = assert_fs::TempDir::new().unwrap();
+        let books_db_file = storage_dir.child("books.db");
+
+        init_db(books_db_file.to_path_buf()).unwrap();
+
+        books_db_file.assert(predicates::path::is_file());
+    }
+
+    #[test]
+    fn init_db_should_create_the_publishers_table() {
+        let storage_dir = assert_fs::TempDir::new().unwrap();
+        let books_db_file = storage_dir.child("books.db");
+
+        init_db(books_db_file.to_path_buf()).unwrap();
+
+        let conn = Connection::open(books_db_file.path()).unwrap();
+        let mut statement = conn
+            .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?")
+            .unwrap();
+        let rows = statement
+            .query_map(&["publishers"], |row| row.get::<_, String>(0))
+            .unwrap();
+        assert!(rows.count() > 0)
+    }
+
+    #[test]
+    fn init_db_should_create_the_authors_table() {
+        let storage_dir = assert_fs::TempDir::new().unwrap();
+        let books_db_file = storage_dir.child("books.db");
+
+        init_db(books_db_file.to_path_buf()).unwrap();
+
+        let conn = Connection::open(books_db_file.path()).unwrap();
+        let mut statement = conn
+            .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?")
+            .unwrap();
+        let rows = statement
+            .query_map(&["authors"], |row| row.get::<_, String>(0))
+            .unwrap();
+        assert!(rows.count() > 0)
+    }
+
+    #[test]
+    fn init_db_should_create_the_books_table() {
+        let storage_dir = assert_fs::TempDir::new().unwrap();
+        let books_db_file = storage_dir.child("books.db");
+
+        init_db(books_db_file.to_path_buf()).unwrap();
+
+        let conn = Connection::open(books_db_file.path()).unwrap();
+        let mut statement = conn
+            .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?")
+            .unwrap();
+        let rows = statement
+            .query_map(&["books"], |row| row.get::<_, String>(0))
+            .unwrap();
+        assert!(rows.count() > 0)
+    }
+
+    #[test]
+    fn init_db_should_create_the_books_authors_table() {
+        let storage_dir = assert_fs::TempDir::new().unwrap();
+        let books_db_file = storage_dir.child("books.db");
+
+        init_db(books_db_file.to_path_buf()).unwrap();
+
+        let conn = Connection::open(books_db_file.path()).unwrap();
+        let mut statement = conn
+            .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?")
+            .unwrap();
+        let rows = statement
+            .query_map(&["books_authors"], |row| row.get::<_, String>(0))
+            .unwrap();
+        assert!(rows.count() > 0)
+    }
+}
