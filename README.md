@@ -29,3 +29,9 @@ books add 9780517597675
 ```
 
 Before the book is saved, you'll get an opportunity to edit any details.
+
+## License
+
+This repository is licensed under the MIT license.
+
+See the [LICENSE](LICENSE) file for more details.
