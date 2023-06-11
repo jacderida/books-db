@@ -1,0 +1,74 @@
+name: merge
+on: pull_request
+jobs:
+  udeps:
+    name: unused dependency check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        id: rust-toolchain
+        with:
+          # cargo-udeps requires the nightly toolchain, which is why we need a separate job.
+          toolchain: nightly
+          components: rustfmt
+      - name: install cargo-udeps
+        run: cargo install cargo-udeps --locked
+      - name: run cargo-udeps
+        run: cargo +nightly udeps --all-targets
+  lint:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@f114310111fdbd07e99f47f9ca13d62b3ec98372
+  checks:
+    name: various checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: install rust
+        uses: dtolnay/rust-toolchain@stable
+        id: rust-toolchain
+        with:
+          toolchain: stable
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - name: check formatting
+        run: cargo fmt --all -- --check
+      - name: run clippy
+        run: cargo clippy --all-targets --all-features -- -Dwarnings
+      - name: check the whole workspace can build
+        run: cargo build --all-targets --all-features
+  unit:
+    name: unit tests
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v2
+      - name: install rust
+        uses: dtolnay/rust-toolchain@stable
+        id: rust-toolchain
+        with:
+          toolchain: stable
+      - uses: Swatinem/rust-cache@v2
+      - name: run tests
+        run: cargo test
+  dry-run-publish:
+    name: dry run publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+      - name: dry run publish
+        run: cargo publish --dry-run
