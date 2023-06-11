@@ -51,6 +51,7 @@ pub fn init_db(database_path: PathBuf) -> Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 pub fn get_book(database_path: PathBuf, id: u32) -> Result<Book> {
     let conn = Connection::open(database_path)?;
     let mut book = match conn.query_row(
@@ -222,7 +223,7 @@ mod test {
             .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?")
             .unwrap();
         let rows = statement
-            .query_map(&["publishers"], |row| row.get::<_, String>(0))
+            .query_map(["publishers"], |row| row.get::<_, String>(0))
             .unwrap();
         assert!(rows.count() > 0)
     }
@@ -239,7 +240,7 @@ mod test {
             .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?")
             .unwrap();
         let rows = statement
-            .query_map(&["authors"], |row| row.get::<_, String>(0))
+            .query_map(["authors"], |row| row.get::<_, String>(0))
             .unwrap();
         assert!(rows.count() > 0)
     }
@@ -256,7 +257,7 @@ mod test {
             .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?")
             .unwrap();
         let rows = statement
-            .query_map(&["books"], |row| row.get::<_, String>(0))
+            .query_map(["books"], |row| row.get::<_, String>(0))
             .unwrap();
         assert!(rows.count() > 0)
     }
@@ -273,7 +274,7 @@ mod test {
             .prepare("SELECT name FROM sqlite_master WHERE type='table' AND name=?")
             .unwrap();
         let rows = statement
-            .query_map(&["books_authors"], |row| row.get::<_, String>(0))
+            .query_map(["books_authors"], |row| row.get::<_, String>(0))
             .unwrap();
         assert!(rows.count() > 0)
     }

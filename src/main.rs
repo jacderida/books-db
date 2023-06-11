@@ -58,7 +58,7 @@ async fn main() -> Result<(), Report> {
         }
     };
 
-    let result = match cli.command {
+    match cli.command {
         Some(Commands::Init) => {
             db::init_db(database_path)?;
             Ok(())
@@ -95,8 +95,7 @@ async fn main() -> Result<(), Report> {
             println!("No command provided. Please use --help to see a list of available commands.");
             Ok(())
         }
-    };
-    result
+    }
 }
 
 fn get_database_path(storage_path: Option<PathBuf>) -> Result<PathBuf> {

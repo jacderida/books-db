@@ -58,7 +58,7 @@ impl FromStr for AddBookModel {
         let mut owned = None;
 
         for line in s.lines() {
-            let mut parts = line.splitn(2, ":");
+            let mut parts = line.splitn(2, ':');
             let key = parts.next();
             let value = parts.next().unwrap_or("").trim();
 
@@ -210,7 +210,7 @@ mod test {
         assert_eq!(model.isbn, "9780233050485");
         assert_eq!(model.binding, "Paperback");
         assert_eq!(model.authors, "Reeve, Simon");
-        assert_eq!(model.owned, true);
+        assert!(model.owned);
         Ok(())
     }
 
@@ -234,7 +234,7 @@ mod test {
             date_published: "1997".to_string(),
             title: "Two Seconds Under the World:Terror Comes to America-The Conspiracy Behind the World Trade Center Bombing".to_string(),
             isbn13: "9780517597675".to_string(),
-            msrp: 24 as f32,
+            msrp: 24_f32,
             binding: "Hardcover".to_string(),
             isbn: "0517597675".to_string(),
             isbn10: "0517597675".to_string(),
@@ -265,7 +265,7 @@ mod test {
             model.authors,
             "Dwyer, Jim; Murphy, Deidre; Tyre, Peg; Kocieniewski, David"
         );
-        assert_eq!(model.owned, true);
+        assert!(model.owned);
         // If the book is first edition, the original date should be set automatically.
         assert_eq!(model.original_date_published, Some("1997".to_string()));
         Ok(())
@@ -308,19 +308,17 @@ mod test {
 
     #[test]
     fn parse_should_convert_an_edited_book_string_to_an_add_book_model() {
-        let edited = format!(
-            "Author(s): Reeve, Simon\n\
-             Publisher: Carlton Publishing Group\n\
-             Title: The New Jackals: Osama Bin Laden and the Future of Terrorism\n\
-             Edition: 2nd\n\
-             Date Published: 2001\n\
-             Original Date Published: 1999\n\
-             Price: 20.0\n\
-             Binding: Paperback\n\
-             ISBN: 9780233050485\n\
-             Pages: 352\n\
-             Owned: true"
-        );
+        let edited = "Author(s): Reeve, Simon\n\
+         Publisher: Carlton Publishing Group\n\
+         Title: The New Jackals: Osama Bin Laden and the Future of Terrorism\n\
+         Edition: 2nd\n\
+         Date Published: 2001\n\
+         Original Date Published: 1999\n\
+         Price: 20.0\n\
+         Binding: Paperback\n\
+         ISBN: 9780233050485\n\
+         Pages: 352\n\
+         Owned: true";
 
         let model: AddBookModel = edited.parse().unwrap();
 
@@ -337,23 +335,21 @@ mod test {
         assert_eq!(model.binding, "Paperback");
         assert_eq!(model.isbn, "9780233050485");
         assert_eq!(model.pages, 352);
-        assert_eq!(model.owned, true);
+        assert!(model.owned);
     }
 
     #[test]
     fn parse_should_convert_an_edited_book_string_with_optional_fields_missing_to_an_add_book_model(
     ) {
-        let edited = format!(
-            "Author(s): Reeve, Simon\n\
-             Publisher: Carlton Publishing Group\n\
-             Title: The New Jackals: Osama Bin Laden and the Future of Terrorism\n\
-             Edition: 2nd\n\
-             Date Published: 2001\n\
-             Binding: Paperback\n\
-             ISBN: 9780233050485\n\
-             Pages: 352\n\
-             Owned: true"
-        );
+        let edited = "Author(s): Reeve, Simon\n\
+         Publisher: Carlton Publishing Group\n\
+         Title: The New Jackals: Osama Bin Laden and the Future of Terrorism\n\
+         Edition: 2nd\n\
+         Date Published: 2001\n\
+         Binding: Paperback\n\
+         ISBN: 9780233050485\n\
+         Pages: 352\n\
+         Owned: true";
 
         let model: AddBookModel = edited.parse().unwrap();
 
@@ -370,25 +366,23 @@ mod test {
         assert_eq!(model.binding, "Paperback");
         assert_eq!(model.isbn, "9780233050485");
         assert_eq!(model.pages, 352);
-        assert_eq!(model.owned, true);
+        assert!(model.owned);
     }
 
     #[test]
     fn parse_should_convert_an_edited_book_string_with_optional_fields_not_populated_to_an_add_book_model(
     ) {
-        let edited = format!(
-            "Author(s): Reeve, Simon\n\
-             Publisher: Carlton Publishing Group\n\
-             Title: The New Jackals: Osama Bin Laden and the Future of Terrorism\n\
-             Edition: 2nd\n\
-             Date Published: 2001\n\
-             Original Date Published:\n\
-             Price: \n\
-             Binding: Paperback\n\
-             ISBN: 9780233050485\n\
-             Pages: 352\n\
-             Owned: true"
-        );
+        let edited = "Author(s): Reeve, Simon\n\
+         Publisher: Carlton Publishing Group\n\
+         Title: The New Jackals: Osama Bin Laden and the Future of Terrorism\n\
+         Edition: 2nd\n\
+         Date Published: 2001\n\
+         Original Date Published:\n\
+         Price: \n\
+         Binding: Paperback\n\
+         ISBN: 9780233050485\n\
+         Pages: 352\n\
+         Owned: true";
 
         let model: AddBookModel = edited.parse().unwrap();
 
@@ -405,6 +399,6 @@ mod test {
         assert_eq!(model.binding, "Paperback");
         assert_eq!(model.isbn, "9780233050485");
         assert_eq!(model.pages, 352);
-        assert_eq!(model.owned, true);
+        assert!(model.owned);
     }
 }
