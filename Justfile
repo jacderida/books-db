@@ -39,15 +39,11 @@ build-release-artifacts arch:
   rm -rf artifacts
   mkdir artifacts
   cargo clean
-  if [[ $arch == arm* || $arch == armv7* || $arch == aarch64* ]]; then
+  if [[ $arch == aarch64* ]]; then
     cargo install cross
-    cross build --release --target $arch --bin safe
-    cross build --release --target $arch --bin safenode
-    cross build --release --target $arch --bin testnet
+    cross build --release --target $arch --bin books
   else
-    cargo build --release --target $arch --bin safe
-    cargo build --release --target $arch --bin safenode
-    cargo build --release --target $arch --bin testnet
+    cargo build --release --target $arch --bin books
   fi
 
   find target/$arch/release -maxdepth 1 -type f -exec cp '{}' artifacts \;
