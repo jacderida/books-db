@@ -1,5 +1,8 @@
 use color_eyre::Result;
+use prettytable::{Cell, Row, Table};
 use serde_json::Value;
+
+const WRAP_LENGTH: usize = 80;
 
 pub struct IsbnDbBook {
     pub publisher: String,
@@ -19,6 +22,88 @@ pub struct IsbnDbBook {
     pub isbn10: String,
     pub subjects: Option<Vec<String>>,
     pub synopsis: Option<String>,
+}
+
+impl IsbnDbBook {
+    pub fn print(&self) {
+        let mut table = Table::new();
+        let wrapped_title = textwrap::wrap(&self.title, WRAP_LENGTH).join("\n");
+        table.add_row(Row::new(vec![
+            Cell::new("Title"),
+            Cell::new(&wrapped_title),
+        ]));
+        if &self.title_long != &self.title {
+            let wrapped_long_title = textwrap::wrap(&self.title_long, 72).join("\n");
+            table.add_row(Row::new(vec![
+                Cell::new("Title (Long)"),
+                Cell::new(&wrapped_long_title),
+            ]));
+        }
+        table.add_row(Row::new(vec![
+            Cell::new("Author(s)"),
+            Cell::new(&self.authors.join("; ")),
+        ]));
+        table.add_row(Row::new(vec![
+            Cell::new("Date Published"),
+            Cell::new(&self.date_published),
+        ]));
+        table.add_row(Row::new(vec![
+            Cell::new("Binding"),
+            Cell::new(&self.binding),
+        ]));
+        table.add_row(Row::new(vec![
+            Cell::new("Edition"),
+            Cell::new(&self.edition),
+        ]));
+        table.add_row(Row::new(vec![
+            Cell::new("Pages"),
+            Cell::new(&self.pages.to_string()),
+        ]));
+        table.add_row(Row::new(vec![
+            Cell::new("Publisher"),
+            Cell::new(&self.publisher),
+        ]));
+        table.add_row(Row::new(vec![
+            Cell::new("Language"),
+            Cell::new(&self.language),
+        ]));
+
+        let wrapped_subjects = textwrap::wrap(
+            &self
+                .subjects
+                .as_ref()
+                .map(|subjects| subjects.join(", "))
+                .unwrap_or_else(|| "N/A".to_string()),
+            WRAP_LENGTH,
+        )
+        .join("\n");
+        table.add_row(Row::new(vec![
+            Cell::new("Subjects"),
+            Cell::new(&wrapped_subjects),
+        ]));
+
+        let wrapped_synopsis = textwrap::wrap(
+            self.synopsis.as_ref().unwrap_or(&"N/A".to_string()),
+            WRAP_LENGTH,
+        )
+        .join("\n");
+        table.add_row(Row::new(vec![
+            Cell::new("Synopsis"),
+            Cell::new(&wrapped_synopsis),
+        ]));
+        table.add_row(Row::new(vec![
+            Cell::new("MSRP"),
+            Cell::new(&self.msrp.to_string()),
+        ]));
+        table.add_row(Row::new(vec![Cell::new("ISBN13"), Cell::new(&self.isbn13)]));
+        table.add_row(Row::new(vec![Cell::new("ISBN"), Cell::new(&self.isbn)]));
+        table.add_row(Row::new(vec![Cell::new("ISBN10"), Cell::new(&self.isbn10)]));
+        table.add_row(Row::new(vec![
+            Cell::new("Dimensions"),
+            Cell::new(&self.dimensions),
+        ]));
+        table.printstd();
+    }
 }
 
 pub struct IsbnDbRepository {

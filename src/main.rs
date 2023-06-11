@@ -28,9 +28,18 @@ struct Cli {
 enum Commands {
     /// Create the database schema
     Init,
+    /// Get the ISBNdb record for a book
+    ///
+    /// This will print the record for the book on the ISBNdb without saving it to the local
+    /// database.
+    Get {
+        /// The book's ISBN
+        #[clap(name = "isbn")]
+        isbn: String,
+    },
     /// Add a book to the database
     Add {
-        /// The ISBN number of the book
+        /// The book's ISBN
         #[clap(name = "isbn")]
         isbn: String,
     },
@@ -52,6 +61,12 @@ async fn main() -> Result<(), Report> {
     let result = match cli.command {
         Some(Commands::Init) => {
             db::init_db(database_path)?;
+            Ok(())
+        }
+        Some(Commands::Get { isbn }) => {
+            let isbn_repo = IsbnDbRepository::new(ISBNDB_URL, &isbn_db_key);
+            let book = isbn_repo.get_book_by_isbn(&isbn).await?;
+            book.print();
             Ok(())
         }
         Some(Commands::Add { isbn }) => {
