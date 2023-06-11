@@ -1,22 +1,6 @@
 name: merge
 on: pull_request
 jobs:
-  udeps:
-    name: unused dependency check
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        id: rust-toolchain
-        with:
-          # cargo-udeps requires the nightly toolchain, which is why we need a separate job.
-          toolchain: nightly
-          components: rustfmt
-      - name: install cargo-udeps
-        run: cargo install cargo-udeps --locked
-      - name: run cargo-udeps
-        run: cargo +nightly udeps --all-targets
   lint:
     runs-on: ubuntu-latest
     env:

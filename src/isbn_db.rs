@@ -32,7 +32,7 @@ impl IsbnDbBook {
             Cell::new("Title"),
             Cell::new(&wrapped_title),
         ]));
-        if &self.title_long != &self.title {
+        if self.title_long != self.title {
             let wrapped_long_title = textwrap::wrap(&self.title_long, 72).join("\n");
             table.add_row(Row::new(vec![
                 Cell::new("Title (Long)"),
@@ -258,7 +258,7 @@ mod test {
             "Two Seconds Under the World:Terror Comes to America-The Conspiracy Behind the World Trade Center Bombing"
         );
         assert_eq!(book.isbn13, isbn);
-        assert_eq!(book.msrp, 24 as f32);
+        assert_eq!(book.msrp, 24_f32);
         assert_eq!(book.binding, "Hardcover");
         assert_eq!(book.isbn, "0517597675");
         assert_eq!(book.isbn10, "0517597675");

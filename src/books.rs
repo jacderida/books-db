@@ -84,12 +84,13 @@ impl BookRepository {
         let mut book = Book::try_from(model)?;
         book.publisher.id = crate::db::save_publisher(self.storage_path.clone(), &book.publisher)?;
         for mut author in book.authors.iter_mut() {
-            author.id = crate::db::save_author(self.storage_path.clone(), &author)?;
+            author.id = crate::db::save_author(self.storage_path.clone(), author)?;
         }
         book.id = crate::db::save_book(self.storage_path.clone(), &book)?;
         Ok(book)
     }
 
+    #[allow(dead_code)]
     pub fn get_by_id(&self, id: u32) -> Result<Book> {
         let book = crate::db::get_book(self.storage_path.clone(), id)?;
         Ok(book)
@@ -145,7 +146,7 @@ mod test {
         assert_eq!(book.binding, "Paperback");
         assert_eq!(book.isbn, "9780233050485");
         assert_eq!(book.pages, 352);
-        assert_eq!(book.owned, true);
+        assert!(book.owned);
         Ok(())
     }
 
@@ -193,7 +194,7 @@ mod test {
         assert_eq!(book.binding, "Hardcover");
         assert_eq!(book.isbn, "9780517597675");
         assert_eq!(book.pages, 322);
-        assert_eq!(book.owned, true);
+        assert!(book.owned);
         Ok(())
     }
 
